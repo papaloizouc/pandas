@@ -88,17 +88,11 @@ class TestCase(unittest.TestCase):
         # reset the display options
         pd.reset_option('^display.',silent=True)
 
-    def assert_numpy_array_equal(self, np_array, assert_equal):
-        """Checks that 'np_array' is equal to 'assert_equal'
-
-        Note that the expected array should not contain `np.nan`! Two numpy arrays are equal if all
-        elements are equal, which is not possible if `np.nan` is such an element!
-
-        If the expected array includes `np.nan` use `assert_numpy_array_equivalent(...)`.
+    def assert_numpy_array_equal(self, *args, **kwargs):
         """
-        if np.array_equal(np_array, assert_equal):
-            return
-        raise AssertionError('{0} is not equal to {1}.'.format(np_array, assert_equal))
+        Wrapper of module level assert_numpy_array_equal
+        """
+        return assert_numpy_array_equal(*args, **kwargs)
 
     def round_trip_pickle(self, obj, path=None):
         if path is None:
@@ -107,19 +101,11 @@ class TestCase(unittest.TestCase):
             pd.to_pickle(obj, path)
             return pd.read_pickle(path)
 
-    def assert_numpy_array_equivalent(self, np_array, assert_equal, strict_nan=False):
-        """Checks that 'np_array' is equivalent to 'assert_equal'
-
-        Two numpy arrays are equivalent if the arrays have equal non-NaN elements, and
-        `np.nan` in corresponding locations.
-
-        If the the expected array does not contain `np.nan` `assert_numpy_array_equivalent` is the
-        similar to `assert_numpy_array_equal()`. If the expected array includes `np.nan` use this
-        function.
+    def assert_numpy_array_equivalent(self, *args, **kwargs):
         """
-        if array_equivalent(np_array, assert_equal, strict_nan=strict_nan):
-            return
-        raise AssertionError('{0} is not equivalent to {1}.'.format(np_array, assert_equal))
+        Wrapper of the modele level function assert_numpy_array_equivalent
+        """
+        return assert_numpy_array_equivalent(*args, **kwargs)
 
     def assert_categorical_equal(self, res, exp):
         if not array_equivalent(res.categories, exp.categories):
@@ -632,6 +618,35 @@ def isiterable(obj):
 
 def is_sorted(seq):
     return assert_almost_equal(seq, np.sort(np.array(seq)))
+
+
+def assert_numpy_array_equal(np_array, assert_equal):
+    """Checks that 'np_array' is equal to 'assert_equal'
+
+    Note that the expected array should not contain `np.nan`! Two numpy arrays are equal if all
+    elements are equal, which is not possible if `np.nan` is such an element!
+
+    If the expected array includes `np.nan` use `assert_numpy_array_equivalent(...)`.
+    """
+    if np.array_equal(np_array, assert_equal):
+        return
+    raise AssertionError('{0} is not equal to {1}.'.format(np_array, assert_equal))
+
+
+def assert_numpy_array_equivalent(np_array, assert_equal, strict_nan=False):
+    """Checks that 'np_array' is equivalent to 'assert_equal'
+
+    Two numpy arrays are equivalent if the arrays have equal non-NaN elements, and
+    `np.nan` in corresponding locations.
+
+    If the the expected array does not contain `np.nan` `assert_numpy_array_equivalent` is the
+    similar to `assert_numpy_array_equal()`. If the expected array includes `np.nan` use this
+    function.
+    """
+    if array_equivalent(np_array, assert_equal, strict_nan=strict_nan):
+        return
+    raise AssertionError('{0} is not equivalent to {1}.'.format(np_array, assert_equal))
+
 
 # This could be refactored to use the NDFrame.equals method
 def assert_series_equal(left, right, check_dtype=True,
